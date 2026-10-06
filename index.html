@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0d10">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Biblioteca de Educativos</title>
+<style>
+:root{
+ --bg:#090b0e;--panel:#13171c;--panel2:#1a2027;--line:#2b333c;--text:#f7f8fa;--muted:#9ba6b2;
+ --accent:#8ce99a;--accent2:#74c0fc;--warn:#ffd43b;--shadow:0 12px 34px rgba(0,0,0,.28)
+}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#080a0d,#11161c);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
+button,input,select{font:inherit}
+.app{max-width:880px;margin:auto;padding:18px 14px 90px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:5px 2px 12px}
+.brand h1{font-size:28px;margin:0;letter-spacing:-.04em}.brand p{margin:3px 0 0;color:var(--muted);font-size:12px}
+.pill{background:#18221b;color:var(--accent);border:1px solid #2c4932;border-radius:999px;padding:7px 10px;font-size:11px;font-weight:800}
+.controls{display:grid;grid-template-columns:1.3fr .7fr;gap:8px;position:sticky;top:8px;z-index:20;background:#0e1216;padding:7px;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+.controls input,.controls select{width:100%;padding:11px 12px;border-radius:11px;background:#12171c;border:1px solid #35404a;color:var(--text);outline:none}
+.controls input:focus,.controls select:focus{border-color:var(--accent2)}
+.section{margin-top:18px}
+.section-title{display:flex;justify-content:space-between;align-items:center;margin:0 2px 8px}
+.section-title h2{font-size:16px;margin:0}.count{font-size:11px;color:var(--muted)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px;margin-top:9px}
+.card-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.name{font-size:16px;font-weight:900}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+.chip{font-size:10px;border:1px solid #39434d;border-radius:999px;padding:4px 7px;color:#c8d0d8}
+.chip.diff{background:#19231d;color:#9beaab;border-color:#30583a}
+.favorite{border:0;background:transparent;color:#6f7b87;font-size:22px;line-height:1;cursor:pointer;padding:0 2px}
+.favorite.on{color:var(--warn)}
+.desc{color:var(--muted);font-size:12px;line-height:1.5;margin-top:10px}
+.details{margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.detail{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px}
+.detail .k{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+.detail .v{font-size:12px;margin-top:4px;line-height:1.4}
+.actions{display:flex;gap:8px;margin-top:10px}
+.btn{flex:1;border:0;border-radius:11px;padding:10px 12px;font-weight:900;cursor:pointer;background:#f5f7f8;color:#0a0d10}
+.btn.secondary{background:#20262d;color:var(--text);border:1px solid var(--line)}
+.empty{padding:30px 12px;text-align:center;color:var(--muted)}
+.footer{font-size:11px;color:var(--muted);line-height:1.5;padding:18px 4px}
+@media(max-width:580px){
+ .app{padding:14px 10px 80px}.brand h1{font-size:24px}.controls{grid-template-columns:1fr}
+ .details{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="brand">
+      <h1>Biblioteca de Educativos</h1>
+      <p>técnica de corrida • consulta rápida</p>
+    </div>
+    <div class="pill">PWA</div>
+  </div>
+
+  <div class="controls">
+    <input id="search" type="search" placeholder="Buscar educativo...">
+    <select id="filter">
+      <option value="todos">Todas as categorias</option>
+      <option value="favoritos">Favoritos</option>
+      <option value="basicos">Básicos</option>
+      <option value="coordenacao">Coordenação e técnica</option>
+      <option value="aplicacao">Aplicação na corrida</option>
+    </select>
+  </div>
+
+  <div id="content"></div>
+
+  <div class="footer">
+    Use os educativos com execução controlada. A qualidade do movimento é mais importante do que fazer rápido ou aumentar o volume.
+  </div>
+</div>
+
+<script>
+const drills=[
+ {id:'saltito1',name:'Saltito – primeira variação',cat:'basicos',catName:'Básicos',difficulty:'Fácil',
+ objective:'Coordenação, elasticidade do tornozelo e contato rápido com o solo.',
+ how:'Faça pequenos saltos curtos, mantendo postura alta e contato leve com o chão.',
+ dose:'2–3 × 20–30 m',video:'https://youtu.be/OMHgktiIjMM?si=T1ztlzk7bt4nRIQ8&t=70'},
+ {id:'saltitoalto',name:'Saltito com joelho alto',cat:'basicos',catName:'Básicos',difficulty:'Médio',
+ objective:'Coordenação, mobilidade do quadril e resposta rápida dos pés.',
+ how:'Alterne pequenas impulsões elevando mais os joelhos, sem inclinar demais o tronco.',
+ dose:'2–3 × 20–30 m',video:'https://youtu.be/OMHgktiIjMM?si=vU0RWOgcC_tGIOTI&t=128'},
+ {id:'joelhobaixo',name:'Corrida com joelho baixo',cat:'basicos',catName:'Básicos',difficulty:'Fácil',
+ objective:'Cadência, contato rápido com o chão e economia de movimento.',
+ how:'Corra em passos curtos e rápidos, mantendo os joelhos baixos e o corpo alinhado.',
+ dose:'2–3 × 20–30 m',video:'https://youtu.be/OMHgktiIjMM?si=DpGp7I_MDZnVDjaG&t=248'},
+ {id:'joelhoalto',name:'Corrida com joelho alto',cat:'basicos',catName:'Básicos',difficulty:'Médio',
+ objective:'Coordenação, ação do quadril e postura.',
+ how:'Eleve os joelhos com ritmo constante, tronco estável e contato rápido com o solo.',
+ dose:'2–3 × 20–30 m',video:'https://youtu.be/OMHgktiIjMM?si=O-ORIa1XniCyRbEo&t=305'},
+ {id:'soldadinho',name:'Soldadinho',cat:'basicos',catName:'Básicos',difficulty:'Fácil',
+ objective:'Mobilidade dinâmica dos posteriores e coordenação.',
+ how:'Avance com a perna mais estendida, levando o pé à frente sem forçar a amplitude.',
+ dose:'2–3 × 20–30 m',video:'https://youtu.be/OMHgktiIjMM?si=41-ieGyKWixu4-J5&t=335'},
+ {id:'soldadinhojoelho',name:'Soldadinho + joelho alto',cat:'basicos',catName:'Básicos',difficulty:'Médio',
+ objective:'Coordenação entre extensão da perna e elevação do joelho.',
+ how:'Alterne um movimento de soldadinho com uma elevação de joelho, mantendo ritmo e postura.',
+ dose:'2–3 × 20–30 m',video:'https://youtu.be/OMHgktiIjMM?si=3t4Z9tO7Jy47qXza&t=380'},
+ {id:'penabunda',name:'Pé na bunda',cat:'basicos',catName:'Básicos',difficulty:'Fácil',
+ objective:'Coordenação da recuperação da perna e mobilidade do joelho.',
+ how:'Leve o calcanhar em direção ao glúteo, mantendo os joelhos apontados para baixo e tronco estável.',
+ dose:'2–3 × 20–30 m',video:'https://youtu.be/OMHgktiIjMM?si=hxdpf8qjik7KPJfS&t=501'},
+ {id:'rodao',name:'Rodadão',cat:'coordenacao',catName:'Coordenação e técnica',difficulty:'Médio',
+ objective:'Amplitude, coordenação e controle do movimento.',
+ how:'Execute movimentos circulares amplos com as pernas, mantendo o tronco estável e ritmo controlado.',
+ dose:'2 × 20–30 m',video:'https://youtu.be/OMHgktiIjMM?si=fgRC4jPLCPPecabd&t=477'},
+ {id:'saltitorodadao',name:'Saltito + joelho alto / rodadão',cat:'coordenacao',catName:'Coordenação e técnica',difficulty:'Médio',
+ objective:'Evoluir a coordenação combinando saltito, elevação do joelho e rodadão.',
+ how:'Faça a sequência de forma contínua, mantendo postura estável, ritmo e precisão dos movimentos.',
+ dose:'2 × 20–30 m',video:'https://youtu.be/OMHgktiIjMM?si=Buu-1AuslzrbV-UC&t=535'},
+ {id:'aplicacaosaltito',name:'Aplicação prática do saltito + rodadão',cat:'aplicacao',catName:'Aplicação na corrida',difficulty:'Médio',
+ objective:'Transferir o padrão técnico do saltito e do rodadão para um movimento mais próximo da corrida.',
+ how:'Execute a combinação e faça a transição de forma progressiva para a corrida, mantendo a técnica.',
+ dose:'2–3 repetições',video:'https://youtu.be/OMHgktiIjMM?si=hwovJPmDuCJOEHdA&t=668'},
+ {id:'bosque',name:'Passear no bosque',cat:'coordenacao',catName:'Coordenação e técnica',difficulty:'Médio',
+ objective:'Mobilidade, coordenação geral e controle corporal.',
+ how:'Faça o padrão de movimento de forma ritmada, priorizando fluidez e precisão.',
+ dose:'2 × 20–30 m',video:'https://youtu.be/OMHgktiIjMM?si=afIlgUImg94v0bJt&t=708'},
+ {id:'mistura',name:'Mistura completa',cat:'coordenacao',catName:'Coordenação e técnica',difficulty:'Difícil',
+ objective:'Integrar diferentes padrões técnicos em sequência.',
+ how:'Combine os educativos previamente treinados sem perder postura ou coordenação.',
+ dose:'2 × 20–30 m',video:'https://youtu.be/OMHgktiIjMM?si=R9g-v0E3XEcfnI5n&t=797'},
+ {id:'aceleracao',name:'Aceleração',cat:'aplicacao',catName:'Aplicação na corrida',difficulty:'Médio',
+ objective:'Transferir a técnica para a corrida real e melhorar a progressão de velocidade.',
+ how:'Comece controlado e aumente gradualmente a velocidade até um ritmo forte, sem sprintar ao máximo.',
+ dose:'3–5 × 60–100 m',video:'https://youtu.be/OMHgktiIjMM?si=5a8FCrPPsMNi5lgz&t=924'}
+];
+
+const DB='BibliotecaEducativosDB',STORE='appData';
+let db,state={favorites:[]};
+
+function openDB(){
+ return new Promise((res,rej)=>{
+  const r=indexedDB.open(DB,1);
+  r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains(STORE))r.result.createObjectStore(STORE)};
+  r.onsuccess=()=>{db=r.result;res()}; r.onerror=()=>rej(r.error)
+ });
+}
+function dbGet(){return new Promise((res,rej)=>{const tx=db.transaction(STORE,'readonly'),r=tx.objectStore(STORE).get('state');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+function dbSet(){return new Promise((res,rej)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).put(state,'state');tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error)})}
+
+function toggleFavorite(id){
+ const i=state.favorites.indexOf(id);
+ if(i>=0) state.favorites.splice(i,1); else state.favorites.push(id);
+ dbSet(); render()
+}
+function render(){
+ const q=document.querySelector('#search').value.trim().toLowerCase();
+ const f=document.querySelector('#filter').value;
+ let items=drills.filter(d=>{
+  const matchText=(d.name+' '+d.objective+' '+d.how).toLowerCase().includes(q);
+  const matchFilter=f==='todos' || (f==='favoritos'&&state.favorites.includes(d.id)) || d.cat===f;
+  return matchText&&matchFilter
+ });
+ items.sort((a,b)=>(state.favorites.includes(b.id)?1:0)-(state.favorites.includes(a.id)?1:0));
+ const grouped={};
+ items.forEach(d=>{if(!grouped[d.catName])grouped[d.catName]=[];grouped[d.catName].push(d)});
+ const content=document.querySelector('#content');content.innerHTML='';
+ if(!items.length){content.innerHTML='<div class="empty">Nenhum educativo encontrado.</div>';return}
+ Object.entries(grouped).forEach(([group,list])=>{
+  const sec=document.createElement('section');sec.className='section';
+  sec.innerHTML=`<div class="section-title"><h2>${group}</h2><span class="count">${list.length} educativo${list.length>1?'s':''}</span></div>`;
+  list.forEach(d=>{
+   const fav=state.favorites.includes(d.id);
+   const card=document.createElement('div');card.className='card';
+   card.innerHTML=`<div class="card-top">
+     <div><div class="name">${d.name}</div><div class="meta"><span class="chip">${d.catName}</span><span class="chip diff">${d.difficulty}</span></div></div>
+     <button class="favorite ${fav?'on':''}" aria-label="Favoritar" data-fav="${d.id}">★</button>
+    </div>
+    <div class="desc">${d.objective}</div>
+    <div class="details">
+      <div class="detail"><div class="k">Como fazer</div><div class="v">${d.how}</div></div>
+      <div class="detail"><div class="k">Dose sugerida</div><div class="v">${d.dose}</div></div>
+    </div>
+    <div class="actions">
+      <button class="btn secondary" data-copy="${d.id}">Copiar instruções</button>
+      <button class="btn" data-video="${d.id}" ${d.video?'':'disabled'}>${d.video?'Assistir vídeo':'Vídeo a adicionar'}</button>
+    </div>`;
+   sec.appendChild(card)
+  });
+  content.appendChild(sec)
+ });
+ document.querySelectorAll('[data-fav]').forEach(b=>b.onclick=()=>toggleFavorite(b.dataset.fav));
+ document.querySelectorAll('[data-copy]').forEach(b=>b.onclick=async()=>{
+   const d=drills.find(x=>x.id===b.dataset.copy);
+   const text=`${d.name}\nObjetivo: ${d.objective}\nComo fazer: ${d.how}\nDose: ${d.dose}`;
+   await navigator.clipboard.writeText(text); b.textContent='Copiado'; setTimeout(()=>b.textContent='Copiar instruções',900)
+ });
+ document.querySelectorAll('[data-video]').forEach(b=>b.onclick=()=>{
+   const d=drills.find(x=>x.id===b.dataset.video); if(d?.video) window.open(d.video,'_blank')
+ })
+}
+document.querySelector('#search').oninput=render;
+document.querySelector('#filter').onchange=render;
+
+(async()=>{
+ await openDB();const saved=await dbGet();if(saved)state=saved;render();
+ if('serviceWorker' in navigator && location.protocol!=='file:')navigator.serviceWorker.register('./sw.js').catch(()=>{})
+})();
+</script>
+</body>
+</html>
